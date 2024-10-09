@@ -162,8 +162,12 @@ def evaluate_episode(agent, env, eval_episode=5, time_step=-1, log_prefix="eval"
     return mean_reward
 
 def get_dataloader(data, label, data_type, label_type, bs):
-    data_batch = torch.tensor(data, dtype=data_type)
-    label_batch = torch.tensor(label, dtype=label_type)
+    if isinstance(data, list):
+        data = np.stack(data, axis=0)
+    if isinstance(label, list):
+        label = np.stack(label, axis=0)
+    data_batch = torch.from_numpy(data).to(data_type)
+    label_batch = torch.from_numpy(label).to(label_type)
     dataset = TensorDataset(data_batch, label_batch)
     data_loader = DataLoader(dataset, batch_size=bs, shuffle=True)
     return data_loader

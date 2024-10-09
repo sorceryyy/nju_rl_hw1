@@ -197,6 +197,7 @@ class ExpertDataCollector(Data_Collector):
         if batch_size is None:
             batch_size = self.length * ratio
 
+        logger.info(f"Datasize: {batch_size}")
         indices = np.random.choice(self.length, batch_size, replace=False)
         sampled_obses = [self.obses[i] for i in indices]
         sampled_actions = [self.actions[i] for i in indices]

@@ -99,6 +99,13 @@ class MyAgent(DaggerAgent):
 			action = torch.argmax(output, dim=1).item()
         
 		return action	# train your model with labeled data
+	
+	def get_checkpoint(self):
+		related_variable ={
+			"optimizer": self.optimizer,
+			"update_num": self.update_num,
+		}
+		return self.model.state_dict(), related_variable
 
 
 

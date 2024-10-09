@@ -23,7 +23,7 @@ def main():
 	# set exp manager
 	task_name = 'dagger'
 	exp_manager.set_hyper_param(**vars(args))
-	exp_manager.add_record_param(["info", "seed", 'env_name'])
+	exp_manager.add_record_param(["info", "seed", 'env_name', 'lr', 'train_bs'])
 	exp_manager.configure(task_name, rla_config='./rla_config.yaml', data_root='./rslts')
 	exp_manager.log_files_gen()
 	exp_manager.print_args()
@@ -79,18 +79,18 @@ def main():
 
 	# start train your agent
 	device = get_device()
+	print(device)
 	dagger = MyAgent(env=env, args=args, device=device)
 	epochs = args.epochs
-	traj_data, traj_label = data_collector.sample()
+	traj_data, traj_label = data_collector.sample(20000)
 	train_data, eval_data, train_label, eval_label = train_test_split(
 		traj_data, traj_label, test_size=1-args.train_ratio
 	)
 	train_dataloader = get_dataloader(train_data, train_label, data_type=torch.float32, label_type=torch.long, bs=args.train_bs)
 	eval_dataloader = get_dataloader(eval_data, eval_label, data_type=torch.float32, label_type=torch.long, bs=args.eval_bs)
 	evaluate_episode(dagger, env=env, eval_episode=2, time_step=-1, log_prefix="debug/dagger_agent")  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
+	exp_manager.new_saver(max_to_keep=1000)
 	for epoch in tqdm(range(epochs), desc="Train Dagger"):
-
-		step = 0
 		train_epoch_loss = dagger.train(train_dataloader)
 
 		logger.logkv("train_epoch_loss", train_epoch_loss)
@@ -106,8 +106,16 @@ def main():
 		if (epoch + 1) % args.rl_log_interval == 0:
 			dagger.model.eval()
 			evaluate_episode(dagger, env=env, eval_episode=10, time_step=epoch)  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
+		
+		
+		if (epoch + 1) % args.save_interval == 0:
+			checkpoint, related_variable = dagger.get_checkpoint()
+			exp_manager.save_checkpoint(checkpoint, related_variable=related_variable)
 
-	evaluate_episode(dagger, eval_episode=20, time_step=epochs)
+	evaluate_episode(dagger, env=env, eval_episode=20, time_step=epochs)
+
+	checkpoint, related_variable = dagger.get_checkpoint()
+	exp_manager.save_checkpoint(checkpoint, related_variable=related_variable)
 
 
 if __name__ == "__main__":
