@@ -1,59 +1,19 @@
-from arguments import get_args
-from Dagger import DaggerAgent, MyAgent
-import numpy as np
-import time
-import gym
+import matplotlib
+import torch
+matplotlib.use('Agg')  # For faster non-interactive plotting
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from PIL import Image
+
+from arguments import get_args
+from Dagger import MyAgent
+import numpy as np
+from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 from RLA import logger, time_step_holder, exp_manager
-from utils import human_play, SB3_Data_Collector, Data_Collector
-
-
-def plot(record):
-	plt.figure()
-	fig, ax = plt.subplots()
-	ax.plot(record['steps'], record['mean'],
-	        color='blue', label='reward')
-	ax.fill_between(record['steps'], record['min'], record['max'],
-	                color='blue', alpha=0.2)
-	ax.set_xlabel('number of steps')
-	ax.set_ylabel('Average score per episode')
-	ax1 = ax.twinx()
-	ax1.plot(record['steps'], record['query'],
-	         color='red', label='query')
-	ax1.set_ylabel('queries')
-	reward_patch = mpatches.Patch(lw=1, linestyle='-', color='blue', label='score')
-	query_patch = mpatches.Patch(lw=1, linestyle='-', color='red', label='query')
-	patch_set = [reward_patch, query_patch]
-	ax.legend(handles=patch_set)
-	fig.savefig('performance.png')
-
-
-# the wrap is mainly for speed up the game
-# the agent will act every num_stacks frames instead of one frame
-class Env(object):
-	def __init__(self, env_name, num_stacks):
-		self.env = gym.make(env_name)
-		# num_stacks: the agent acts every num_stacks frames
-		# it could be any positive integer
-		self.num_stacks = num_stacks
-		self.observation_space = self.env.observation_space
-		self.action_space = self.env.action_space
-
-	def step(self, action):
-		reward_sum = 0
-		for stack in range(self.num_stacks):
-			obs_next, reward, done, info = self.env.step(action)
-			reward_sum += reward
-			if done:
-				self.env.reset()
-				return obs_next, reward_sum, done, info
-		return obs_next, reward_sum, done, info
-
-	def reset(self):
-		return self.env.reset()
+from expert import ExpertDataCollector, Data_Collector
+from env import Env
+from rnd.agents import RNDAgent
+from utils import human_play, get_device, evaluate_episode, set_seed_everywhere, get_dataloader
 
 
 def main():
@@ -61,33 +21,24 @@ def main():
 	args = get_args()
 
 	# set exp manager
-	exp_manager.set_hyper_param()
+	task_name = 'dagger'
+	exp_manager.set_hyper_param(**vars(args))
+	exp_manager.add_record_param(["info", "seed", 'env_name'])
+	exp_manager.configure(task_name, rla_config='./rla_config.yaml', data_root='./rslts')
+	exp_manager.log_files_gen()
+	exp_manager.print_args()
 
-	num_updates = int(args.num_frames // args.num_steps)
-	start = time.time()
-	record = {'steps': [0],
-	          'max': [0],
-	          'mean': [0],
-	          'min': [0],
-	          'query': [0]}
-	# query_cnt counts queries to the expert
-	query_cnt = 0
+	set_seed_everywhere(args.seed)
 
 	# environment initial
 	env = Env(args.env_name, args.num_stacks)
 	# action_shape is the size of the discrete action set, here is 18
-	# Most of the 18 actions are useless, find important actions
-	# in the tips of the homework introduction document
 	action_shape = env.action_space.n
 	# observation_shape is the shape of the observation
 	# here is (210,160,3)=(height, weight, channels)
 	observation_shape = env.observation_space.shape
 	print(action_shape, observation_shape)
 
-	# agent initial
-	# you should finish your agent with DaggerAgent
-	# e.g. agent = MyDaggerAgent()
-	agent = MyAgent(env=env, args=args)
 
 	# You can play this game yourself for fun
 	if args.play_game:
@@ -96,56 +47,67 @@ def main():
 	# set data collector
 	data_collector: Data_Collector = None
 	if args.data_collector == "sb3":
-		data_collector = SB3_Data_Collector(env=env, epsilon=args.epsilon)
-
-	data_set = {'data': [], 'label': []}
+		data_collector = ExpertDataCollector(env=env, epsilon=args.epsilon)
+	elif args.data_collector == "rnd":
+		input_size = observation_shape  # 4
+		output_size = action_shape  # 2
+		agent = RNDAgent(
+			input_size,
+			output_size,
+			args.num_worker,
+			args.num_step,
+			args.gamma,
+			lam=args.lam,
+			learning_rate=args.learning_rate,
+			ent_coef=args.entropy_coef,
+			clip_grad_norm=args.clip_grad_norm,
+			epoch=args.epoch,
+			batch_size=args.mini_batch,
+			ppo_eps=args.ppo_eps,
+			use_cuda=args.use_gpu,
+			use_gae=args.use_gae,
+			use_noisy_net=args.use_noisy_net
+		)
+		agent.load(args.rnd_model_dir, env_id=args.env_name)
+		evaluate_episode(agent=agent, env=env, eval_episode=1, log_prefix="debug/rnd_agent")	# test
+		data_collector = ExpertDataCollector(env=env, agent=agent, args=args)
+		data_collector.load()
+		data_collector.collect(target_buffer_step=100000)
+		data_collector.save()
+		data_collector.info()
+		
 
 	# start train your agent
-	for i in range(num_updates):
-		# an example of interacting with the environment
-		# we init the environment and receive the initial observation
-		# design how to train your model with labeled data
-		traj_data, traj_label = data_collector.collect(num_steps=args.num_step)
-		data_set['data'] += traj_data
-		data_set['label'] += traj_label
-		agent.update(data_set['data'], data_set['label'])
+	device = get_device()
+	dagger = MyAgent(env=env, args=args, device=device)
+	epochs = args.epochs
+	traj_data, traj_label = data_collector.sample()
+	train_data, eval_data, train_label, eval_label = train_test_split(
+		traj_data, traj_label, test_size=1-args.train_ratio
+	)
+	train_dataloader = get_dataloader(train_data, train_label, data_type=torch.float32, label_type=torch.long, bs=args.train_bs)
+	eval_dataloader = get_dataloader(eval_data, eval_label, data_type=torch.float32, label_type=torch.long, bs=args.eval_bs)
+	evaluate_episode(dagger, env=env, eval_episode=2, time_step=-1, log_prefix="debug/dagger_agent")  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
+	for epoch in tqdm(range(epochs), desc="Train Dagger"):
 
-		if (i + 1) % args.log_interval == 0:
-			total_num_steps = (i + 1) * args.num_steps
-			obs = env.reset()
-			reward_episode_set = []
-			reward_episode = 0
-			# evaluate your model by testing in the environment
-			for step in range(args.test_steps):
-				action = agent.select_action(obs)
-				# you can render to get visual results
-				# envs.render()
-				obs_next, reward, done, _ = env.step(action)
-				reward_episode += reward
-				obs = obs_next
-				if done:
-					reward_episode_set.append(reward_episode)
-					reward_episode = 0
-					env.reset()
+		step = 0
+		train_epoch_loss = dagger.train(train_dataloader)
 
-			end = time.time()
-			print(
-				"TIME {} Updates {}, num timesteps {}, FPS {} \n query {}, avrage/min/max reward {:.1f}/{:.1f}/{:.1f}"
-					.format(
-					time.strftime("%Hh %Mm %Ss", time.gmtime(time.time() - start)),
-					i, total_num_steps,
-					int(total_num_steps / (end - start)),
-					query_cnt,
-					np.mean(reward_episode_set),
-					np.min(reward_episode_set),
-					np.max(reward_episode_set)
-				))
-			record['steps'].append(total_num_steps)
-			record['mean'].append(np.mean(reward_episode_set))
-			record['max'].append(np.max(reward_episode_set))
-			record['min'].append(np.min(reward_episode_set))
-			record['query'].append(query_cnt)
-			plot(record)
+		logger.logkv("train_epoch_loss", train_epoch_loss)
+		time_step_holder.set_time(epoch)
+		logger.dumpkvs()
+
+		eval_loss, eval_accuracy = dagger.evaluate(eval_dataloader)
+		logger.logkv("eval_epoch_loss", eval_loss)
+		logger.logkv("eval_epoch_accuracy", eval_accuracy)
+		time_step_holder.set_time(epoch)
+		logger.dumpkvs()
+
+		if (epoch + 1) % args.rl_log_interval == 0:
+			dagger.model.eval()
+			evaluate_episode(dagger, env=env, eval_episode=10, time_step=epoch)  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
+
+	evaluate_episode(dagger, eval_episode=20, time_step=epochs)
 
 
 if __name__ == "__main__":

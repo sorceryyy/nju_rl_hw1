@@ -1,0 +1,255 @@
+Logging to /tmp/openai-2024-10-09-18-12-17-690435
+private_config: 
+k: PROJECT_TYPE, v: {'backup_code_by': 'source'}
+k: BACKUP_CONFIG, v: {'backup_code_dir': None, 'lib_dir': './build/lib/'}
+k: LOG_USED, v: ['stdout', 'log', 'tensorboard', 'csv']
+k: DL_FRAMEWORK, v: torch
+k: SEND_LOG_FILE, v: False
+k: REMOTE_SETTING, v: {'ftp_server': '', 'username': '', 'password': '', 'remote_data_root': '', 'file_transfer_protocol': 'sftp'}
+gen log files for record date : 2024-10-09 18:12:17.691242
+store file ./rslts/archive_tester/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+Logging to ./rslts/log/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+log dir: ./rslts/log/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+pkl_file: ./rslts/archive_tester/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+checkpoint_dir: ./rslts/checkpoint/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+results_dir: ./rslts/results/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+[BACKUP] 0 : key: action_prob, value: 0.25
+[BACKUP] 0 : key: clip_grad_norm, value: 0.5
+[BACKUP] 0 : key: data_collector, value: rnd
+[BACKUP] 0 : key: data_dir, value: ./data
+[BACKUP] 0 : key: entropy_coef, value: 0.001
+[BACKUP] 0 : key: env_id, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_name, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_type, value: atari
+[BACKUP] 0 : key: epoch, value: 4
+[BACKUP] 0 : key: epochs, value: 100
+[BACKUP] 0 : key: epsilon, value: 0
+[BACKUP] 0 : key: eval_bs, value: 256
+[BACKUP] 0 : key: ext_coef, value: 2.0
+[BACKUP] 0 : key: gamma, value: 0.999
+[BACKUP] 0 : key: info, value: 
+[BACKUP] 0 : key: int_coef, value: 1.0
+[BACKUP] 0 : key: int_gamma, value: 0.99
+[BACKUP] 0 : key: lam, value: 0.95
+[BACKUP] 0 : key: learning_rate, value: 0.0001
+[BACKUP] 0 : key: life_done, value: False
+[BACKUP] 0 : key: log_interval, value: 10
+[BACKUP] 0 : key: lr, value: 0.0001
+[BACKUP] 0 : key: max_step_per_episode, value: 4500
+[BACKUP] 0 : key: mini_batch, value: 4
+[BACKUP] 0 : key: num_frames, value: 100000
+[BACKUP] 0 : key: num_stacks, value: 8
+[BACKUP] 0 : key: num_step, value: 128
+[BACKUP] 0 : key: num_steps, value: 400
+[BACKUP] 0 : key: num_worker, value: 1
+[BACKUP] 0 : key: obs_norm_step, value: 50
+[BACKUP] 0 : key: play_game, value: False
+[BACKUP] 0 : key: ppo_eps, value: 0.1
+[BACKUP] 0 : key: preproc_height, value: 84
+[BACKUP] 0 : key: preproc_width, value: 84
+[BACKUP] 0 : key: reset_collection, value: False
+[BACKUP] 0 : key: rl_log_interval, value: 5
+[BACKUP] 0 : key: rnd_model_dir, value: ./rnd
+[BACKUP] 0 : key: save_img, value: True
+[BACKUP] 0 : key: save_interval, value: 10
+[BACKUP] 0 : key: seed, value: 0
+[BACKUP] 0 : key: stable_eps, value: 1e-08
+[BACKUP] 0 : key: state_stack_size, value: 4
+[BACKUP] 0 : key: sticky_action, value: True
+[BACKUP] 0 : key: test_steps, value: 2000
+[BACKUP] 0 : key: train_bs, value: 64
+[BACKUP] 0 : key: train_ratio, value: 0.8
+[BACKUP] 0 : key: update_proportion, value: 0.25
+[BACKUP] 0 : key: use_gae, value: True
+[BACKUP] 0 : key: use_gpu, value: True
+[BACKUP] 0 : key: use_noisy_net, value: False
+[BACKUP] 0 : key: use_norm, value: False
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+/home/sorceryyy/anaconda3/envs/deeprl/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+gen: ./rslts/code/dagger/2024/10/09/18-12-17-691242_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/parameter.json
+18 (210, 160, 3)
+Loading Pre-trained model....
+End load...
+---------------------------------------------------------------------------
+| debug/rnd_agent/episodes    | 1        |
+| debug/rnd_agent/mean_reward | 4.9e+03  |
+| debug/rnd_agent/std_reward  | 0        |
+| time-step                   | -1       |
+---------------------------------------------------------------------------
+Data loaded from ./data/expert_data_epsilon0.0.pkl
+Start collecting 0 steps
+data collection: 0it [00:00, ?it/s]data collection: 0it [00:00, ?it/s]
+Data saved to ./data/expert_data_epsilon0.0.pkl
+dataset info: mean 3962.280701754386, std: 855.0562052806711 
+Logging to /tmp/openai-2024-10-09-19-06-12-556272
+private_config: 
+k: PROJECT_TYPE, v: {'backup_code_by': 'source'}
+k: BACKUP_CONFIG, v: {'backup_code_dir': None, 'lib_dir': './build/lib/'}
+k: LOG_USED, v: ['stdout', 'log', 'tensorboard', 'csv']
+k: DL_FRAMEWORK, v: torch
+k: SEND_LOG_FILE, v: False
+k: REMOTE_SETTING, v: {'ftp_server': '', 'username': '', 'password': '', 'remote_data_root': '', 'file_transfer_protocol': 'sftp'}
+gen log files for record date : 2024-10-09 19:06:12.557295
+store file ./rslts/archive_tester/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+Logging to ./rslts/log/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+log dir: ./rslts/log/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+pkl_file: ./rslts/archive_tester/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+checkpoint_dir: ./rslts/checkpoint/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+results_dir: ./rslts/results/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+[BACKUP] 0 : key: action_prob, value: 0.25
+[BACKUP] 0 : key: clip_grad_norm, value: 0.5
+[BACKUP] 0 : key: data_collector, value: rnd
+[BACKUP] 0 : key: data_dir, value: ./data
+[BACKUP] 0 : key: entropy_coef, value: 0.001
+[BACKUP] 0 : key: env_id, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_name, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_type, value: atari
+[BACKUP] 0 : key: epoch, value: 4
+[BACKUP] 0 : key: epochs, value: 100
+[BACKUP] 0 : key: epsilon, value: 0
+[BACKUP] 0 : key: eval_bs, value: 256
+[BACKUP] 0 : key: ext_coef, value: 2.0
+[BACKUP] 0 : key: gamma, value: 0.999
+[BACKUP] 0 : key: info, value: 
+[BACKUP] 0 : key: int_coef, value: 1.0
+[BACKUP] 0 : key: int_gamma, value: 0.99
+[BACKUP] 0 : key: lam, value: 0.95
+[BACKUP] 0 : key: learning_rate, value: 0.0001
+[BACKUP] 0 : key: life_done, value: False
+[BACKUP] 0 : key: log_interval, value: 10
+[BACKUP] 0 : key: lr, value: 0.0001
+[BACKUP] 0 : key: max_step_per_episode, value: 4500
+[BACKUP] 0 : key: mini_batch, value: 4
+[BACKUP] 0 : key: num_frames, value: 100000
+[BACKUP] 0 : key: num_stacks, value: 8
+[BACKUP] 0 : key: num_step, value: 128
+[BACKUP] 0 : key: num_steps, value: 400
+[BACKUP] 0 : key: num_worker, value: 1
+[BACKUP] 0 : key: obs_norm_step, value: 50
+[BACKUP] 0 : key: play_game, value: False
+[BACKUP] 0 : key: ppo_eps, value: 0.1
+[BACKUP] 0 : key: preproc_height, value: 84
+[BACKUP] 0 : key: preproc_width, value: 84
+[BACKUP] 0 : key: reset_collection, value: False
+[BACKUP] 0 : key: rl_log_interval, value: 5
+[BACKUP] 0 : key: rnd_model_dir, value: ./rnd
+[BACKUP] 0 : key: save_img, value: True
+[BACKUP] 0 : key: save_interval, value: 10
+[BACKUP] 0 : key: seed, value: 0
+[BACKUP] 0 : key: stable_eps, value: 1e-08
+[BACKUP] 0 : key: state_stack_size, value: 4
+[BACKUP] 0 : key: sticky_action, value: True
+[BACKUP] 0 : key: test_steps, value: 2000
+[BACKUP] 0 : key: train_bs, value: 64
+[BACKUP] 0 : key: train_ratio, value: 0.8
+[BACKUP] 0 : key: update_proportion, value: 0.25
+[BACKUP] 0 : key: use_gae, value: True
+[BACKUP] 0 : key: use_gpu, value: True
+[BACKUP] 0 : key: use_noisy_net, value: False
+[BACKUP] 0 : key: use_norm, value: False
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+/home/sorceryyy/anaconda3/envs/deeprl/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+gen: ./rslts/code/dagger/2024/10/09/19-06-12-557295_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/parameter.json
+18 (210, 160, 3)
+Loading Pre-trained model....
+End load...
+---------------------------------------------------------------------------
+| debug/rnd_agent/episodes    | 1        |
+| debug/rnd_agent/mean_reward | 4.9e+03  |
+| debug/rnd_agent/std_reward  | 0        |
+| time-step                   | -1       |
+---------------------------------------------------------------------------
+Data loaded from ./data/expert_data_epsilon0.0.pkl
+Start collecting 0 steps
+data collection: 0it [00:00, ?it/s]data collection: 0it [00:00, ?it/s]
+Data saved to ./data/expert_data_epsilon0.0.pkl
+dataset info: mean 3962.280701754386, std: 855.0562052806711 
+Logging to /tmp/openai-2024-10-09-19-11-57-871681
+private_config: 
+k: PROJECT_TYPE, v: {'backup_code_by': 'source'}
+k: BACKUP_CONFIG, v: {'backup_code_dir': None, 'lib_dir': './build/lib/'}
+k: LOG_USED, v: ['stdout', 'log', 'tensorboard', 'csv']
+k: DL_FRAMEWORK, v: torch
+k: SEND_LOG_FILE, v: False
+k: REMOTE_SETTING, v: {'ftp_server': '', 'username': '', 'password': '', 'remote_data_root': '', 'file_transfer_protocol': 'sftp'}
+gen log files for record date : 2024-10-09 19:11:57.872071
+store file ./rslts/archive_tester/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+Logging to ./rslts/log/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+log dir: ./rslts/log/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+pkl_file: ./rslts/archive_tester/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4.pkl
+checkpoint_dir: ./rslts/checkpoint/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+results_dir: ./rslts/results/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/
+[BACKUP] 0 : key: action_prob, value: 0.25
+[BACKUP] 0 : key: clip_grad_norm, value: 0.5
+[BACKUP] 0 : key: data_collector, value: rnd
+[BACKUP] 0 : key: data_dir, value: ./data
+[BACKUP] 0 : key: entropy_coef, value: 0.001
+[BACKUP] 0 : key: env_id, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_name, value: MontezumaRevengeNoFrameskip-v4
+[BACKUP] 0 : key: env_type, value: atari
+[BACKUP] 0 : key: epoch, value: 4
+[BACKUP] 0 : key: epochs, value: 100
+[BACKUP] 0 : key: epsilon, value: 0
+[BACKUP] 0 : key: eval_bs, value: 256
+[BACKUP] 0 : key: ext_coef, value: 2.0
+[BACKUP] 0 : key: gamma, value: 0.999
+[BACKUP] 0 : key: info, value: 
+[BACKUP] 0 : key: int_coef, value: 1.0
+[BACKUP] 0 : key: int_gamma, value: 0.99
+[BACKUP] 0 : key: lam, value: 0.95
+[BACKUP] 0 : key: learning_rate, value: 0.0001
+[BACKUP] 0 : key: life_done, value: False
+[BACKUP] 0 : key: log_interval, value: 10
+[BACKUP] 0 : key: lr, value: 0.0001
+[BACKUP] 0 : key: max_step_per_episode, value: 4500
+[BACKUP] 0 : key: mini_batch, value: 4
+[BACKUP] 0 : key: num_frames, value: 100000
+[BACKUP] 0 : key: num_stacks, value: 8
+[BACKUP] 0 : key: num_step, value: 128
+[BACKUP] 0 : key: num_steps, value: 400
+[BACKUP] 0 : key: num_worker, value: 1
+[BACKUP] 0 : key: obs_norm_step, value: 50
+[BACKUP] 0 : key: play_game, value: False
+[BACKUP] 0 : key: ppo_eps, value: 0.1
+[BACKUP] 0 : key: preproc_height, value: 84
+[BACKUP] 0 : key: preproc_width, value: 84
+[BACKUP] 0 : key: reset_collection, value: False
+[BACKUP] 0 : key: rl_log_interval, value: 5
+[BACKUP] 0 : key: rnd_model_dir, value: ./rnd
+[BACKUP] 0 : key: save_img, value: True
+[BACKUP] 0 : key: save_interval, value: 10
+[BACKUP] 0 : key: seed, value: 0
+[BACKUP] 0 : key: stable_eps, value: 1e-08
+[BACKUP] 0 : key: state_stack_size, value: 4
+[BACKUP] 0 : key: sticky_action, value: True
+[BACKUP] 0 : key: test_steps, value: 2000
+[BACKUP] 0 : key: train_bs, value: 64
+[BACKUP] 0 : key: train_ratio, value: 0.8
+[BACKUP] 0 : key: update_proportion, value: 0.25
+[BACKUP] 0 : key: use_gae, value: True
+[BACKUP] 0 : key: use_gpu, value: True
+[BACKUP] 0 : key: use_noisy_net, value: False
+[BACKUP] 0 : key: use_norm, value: False
+A.L.E: Arcade Learning Environment (version 0.8.1+53f58b7)
+[Powered by Stella]
+/home/sorceryyy/anaconda3/envs/deeprl/lib/python3.10/site-packages/gym/utils/passive_env_checker.py:233: DeprecationWarning: `np.bool8` is a deprecated alias for `np.bool_`.  (Deprecated NumPy 1.24)
+  if not isinstance(terminated, (bool, np.bool8)):
+gen: ./rslts/code/dagger/2024/10/09/19-11-57-872071_172.25.193.235_&info=&seed=0&env_name=MontezumaRevengeNoFrameskip-v4/parameter.json
+18 (210, 160, 3)
+Loading Pre-trained model....
+End load...
+---------------------------------------------------------------------------
+| debug/rnd_agent/episodes    | 1        |
+| debug/rnd_agent/mean_reward | 4.9e+03  |
+| debug/rnd_agent/std_reward  | 0        |
+| time-step                   | -1       |
+---------------------------------------------------------------------------
+Data loaded from ./data/expert_data_epsilon0.0.pkl
+Start collecting 0 steps
+data collection: 0it [00:00, ?it/s]data collection: 0it [00:00, ?it/s]
+Data saved to ./data/expert_data_epsilon0.0.pkl
+dataset info: mean 3962.280701754386, std: 855.0562052806711 
