@@ -23,7 +23,7 @@ def main():
 	# set exp manager
 	task_name = 'dagger'
 	exp_manager.set_hyper_param(**vars(args))
-	exp_manager.add_record_param(["info", "seed", 'env_name', 'lr', 'train_bs'])
+	exp_manager.add_record_param(["info", "seed", 'env_name', 'lr', 'train_bs', 'epsilon'])
 	exp_manager.configure(task_name, rla_config='./rla_config.yaml', data_root='./rslts')
 	exp_manager.log_files_gen()
 	exp_manager.print_args()
@@ -82,7 +82,7 @@ def main():
 	print(device)
 	dagger = MyAgent(env=env, args=args, device=device)
 	epochs = args.epochs
-	traj_data, traj_label = data_collector.sample(20000)
+	traj_data, traj_label = data_collector.sample(args.data_size)
 	train_data, eval_data, train_label, eval_label = train_test_split(
 		traj_data, traj_label, test_size=1-args.train_ratio
 	)

@@ -28,6 +28,8 @@ def get_args():
     parser.add_argument('--data-dir', type=str, default="./data")
     parser.add_argument('--train-ratio', type=float, default=0.8)
     parser.add_argument('--rl-log-interval', type=int, default=5)
+    # datasize
+    parser.add_argument('--data-size', type=int, default=20000)
 
     # rnd params
     parser.add_argument('--rnd-model-dir', type=str, default="./rnd")
