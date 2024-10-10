@@ -5,7 +5,7 @@ import stable_baselines3
 import numpy as np
 
 from PIL import Image
-from copy import deepcopy
+from copy import copy, deepcopy
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 from tqdm import tqdm
@@ -102,15 +102,17 @@ class ExpertDataCollector(Data_Collector):
     def info(self):
         final_reward = []
         r_episode = 0
+        traj_num = 0
         for r, e in zip(self.rewards, self.ends):
             r_episode += r
             if e:
                 final_reward.append(r_episode)
                 r_episode = 0
+                traj_num += 1
         
         data_m, data_std = np.mean(final_reward), np.std(final_reward)
         
-        logger.info(f"dataset info: mean {data_m}, std: {data_std} ")
+        logger.info(f"dataset info: traj num {traj_num}, mean {data_m}, std: {data_std} ")
                 
 
 
@@ -136,7 +138,7 @@ class ExpertDataCollector(Data_Collector):
             obs_next, reward, done, truncated, _ = self.env.step(action)  # Step in the environment
 
             # Store the current observation and action
-            self.obses.append(obs)
+            self.obses.append(copy(obs)) # fix bug: mutable object
             self.actions.append(action)
             self.rewards.append(reward)
             self.ends.append((done or truncated))

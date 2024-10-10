@@ -72,7 +72,7 @@ def main():
 		evaluate_episode(agent=agent, env=env, eval_episode=1, log_prefix="debug/rnd_agent")	# test
 		data_collector = ExpertDataCollector(env=env, agent=agent, args=args)
 		data_collector.load()
-		data_collector.collect(target_buffer_step=100000)
+		data_collector.collect(target_buffer_step=10000)
 		data_collector.save()
 		data_collector.info()
 		
