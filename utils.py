@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import random
 
 import torch
+import cv2
 from torch import inf
 from torch.utils.data import DataLoader, TensorDataset
 
@@ -106,6 +107,19 @@ def plot(record):
 #             print(f"Image saved at {img_path}")
         
 #         self.img_count += 1  # Increment image count for unique file names
+def turn_grey(bs_obs):
+    """bs_obs: (batch_size, height, width, channels)"""
+    
+    # 如果输入已经是 numpy 数组形式，可以使用批量操作
+    # 只保留 R,G,B 维度，不包含批量维度
+    def convert_to_grey(obs):
+        # return np.array(Image.fromarray(obs).convert('L')).astype('float32')
+        return np.array(cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)).astype('float32')
+    
+    # 使用 np.apply_along_axis 进行批量操作
+    grey_obs = np.stack([convert_to_grey(obs) for obs in bs_obs], axis=0)
+    
+    return grey_obs
 
 def plot_and_save_fig(env, img_path):
     env = unwrap(env)
@@ -115,7 +129,7 @@ def plot_and_save_fig(env, img_path):
     im.save(img_path)
     print(f"Image saved at {img_path}")
 
-def evaluate_episode(agent, env, eval_episode=5, time_step=-1, log_prefix="eval"):
+def evaluate_episode(agent, env, eval_episode=5, time_step=-1, log_prefix="eval", save_fig=False):
     """
     Evaluate the agent over multiple episodes and log the mean and standard deviation of rewards.
 
@@ -129,12 +143,17 @@ def evaluate_episode(agent, env, eval_episode=5, time_step=-1, log_prefix="eval"
         float: The average reward obtained over all episodes.
     """
     rewards = []  # List to store total reward for each episode
+    episode_len = []
+    if save_fig:
+        save_fig_dir = os.path.join(exp_manager.results_dir, f"log{log_prefix}_time_step{time_step}")
+        os.makedirs(save_fig_dir, exist_ok=True)
     
     for episode in range(eval_episode):
         state, info = env.reset()  # Reset the environment for a new episode
         episode_reward = 0.0
         done, truncated = False, False
         step = 0
+
         
         while not (done or truncated):
             action = agent.predict(state)  # Agent selects an action
@@ -143,18 +162,24 @@ def evaluate_episode(agent, env, eval_episode=5, time_step=-1, log_prefix="eval"
             state = next_state  # Move to the next state
 
             step += 1
-            if step % 1000 == 0:
+            if save_fig and step % 3 == 0 and episode==0:
                 print(f"step: {step}, reward:{episode_reward}")
-                plot_and_save_fig(env=env, img_path=os.path.join(exp_manager.results_dir, f"{step}.jpeg"))
+                plot_and_save_fig(env=env, img_path=os.path.join(save_fig_dir, f"{step}.jpeg"))
         
         rewards.append(episode_reward)  # Append the total reward for this episode
+        episode_len.append(step)
     
     mean_reward = np.mean(rewards)
     std_reward = np.std(rewards)
+    mean_len = np.mean(episode_len)
+    std_len = np.std(episode_len)
 
     # If a logger is provided, log the mean and standard deviation of rewards
     logger.logkv(f'{log_prefix}/mean_reward', mean_reward)
     logger.logkv(f'{log_prefix}/std_reward', std_reward)
+    logger.logkv(f'{log_prefix}/mean_episode_len', mean_len)
+    logger.logkv(f'{log_prefix}/std_episode_len', std_len)
+    
     logger.logkv(f'{log_prefix}/episodes', eval_episode)
     time_step_holder.set_time(time_step)
     logger.dumpkvs()  # Dump all key-value logs

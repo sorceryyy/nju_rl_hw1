@@ -12,12 +12,12 @@ def get_args():
     parser.add_argument('--num-stacks', type=int, default=8)
     parser.add_argument('--num-steps', type=int, default=400)
     parser.add_argument('--test-steps', type=int, default=2000)
-    parser.add_argument('--num-frames', type=int, default=100000)
+    parser.add_argument('--num-frames', type=int, default=10000)
     parser.add_argument('--log-interval', type=int, default=10, help='Log interval, one log per n updates (default: 10)')
     parser.add_argument('--save-img', type=bool, default=True)
     parser.add_argument('--save-interval', type=int, default=10, help='Save interval, one eval per n updates (default: None)')
     parser.add_argument('--play-game', type=bool, default=False)
-    parser.add_argument('--epsilon', type=float, default=0, help="Exploration rate (epsilon)")
+    parser.add_argument('--epsilon', type=float, default=0.3, help="Prob of taking expert action")
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--train-bs', type=int, default=128)
     parser.add_argument('--eval-bs', type=int, default=256)
@@ -27,9 +27,15 @@ def get_args():
     parser.add_argument('--data-collector', type=str, default='rnd')
     parser.add_argument('--data-dir', type=str, default="./data")
     parser.add_argument('--train-ratio', type=float, default=0.8)
-    parser.add_argument('--rl-log-interval', type=int, default=5)
-    # datasize
-    parser.add_argument('--data-size', type=int, default=20000)
+    parser.add_argument('--rl-log-interval', type=int, default=20)
+
+    # collect data
+    parser.add_argument('--collect-interval', type=int, default=100)
+
+    # trainer
+    parser.add_argument('--max_buffer_size', type=int, default=20000)
+    parser.add_argument('--epoch-data-num', type=int, default=2000, help="Collected data per epoch")
+    parser.add_argument('--epoch', type=int, default=4, help='Number of PPO epochs')
 
     # rnd params
     parser.add_argument('--rnd-model-dir', type=str, default="./rnd")
@@ -37,7 +43,6 @@ def get_args():
     parser.add_argument('--num_worker', type=int, default=1, help='Number of workers')
     parser.add_argument('--num_step', type=int, default=128, help='Number of steps per worker')
     parser.add_argument('--ppo_eps', type=float, default=0.1, help='PPO epsilon')
-    parser.add_argument('--epoch', type=int, default=4, help='Number of PPO epochs')
     parser.add_argument('--mini_batch', type=int, default=4, help='Number of mini-batches per update')
     parser.add_argument('--learning_rate', type=float, default=1e-4, help='Learning rate')
     parser.add_argument('--entropy_coef', type=float, default=0.001, help='Entropy coefficient')

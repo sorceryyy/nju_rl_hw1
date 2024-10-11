@@ -81,8 +81,8 @@ class Env(gym.Wrapper):
         self.h = h  # height of preprocessed image
         self.w = w  # width of preprocessed image
 
-        # Initialize history with zeros: shape [history_size, h, w]
-        self.history = np.zeros([self.history_size, h, w], dtype=np.float32)
+        # Initialize history with zeros: shape [history_size, c, h, w]
+        self.history = np.zeros([self.history_size, 3, h, w], dtype=np.float32)
 
         # Save observation space and action space from original environment
         self.observation_space = self.env.observation_space
@@ -98,8 +98,8 @@ class Env(gym.Wrapper):
 
         # Preprocess the observation and update history
         obs_next = self.pre_proc(obs_next)
-        self.history[:self.history_size-1, :, :] = self.history[1:, :, :]
-        self.history[self.history_size-1, :, :] = obs_next
+        self.history[:self.history_size-1, ...] = self.history[1:, ...]
+        self.history[self.history_size-1, ...] = obs_next
 
         return self.history, reward_sum, done, truncated, info
 
@@ -109,16 +109,17 @@ class Env(gym.Wrapper):
         obs = self.pre_proc(obs)
         self.history = np.stack([obs] * self.history_size, axis=0)
         return self.history, info
+    
 
     def pre_proc(self, obs):
         """
-        Preprocess the observation by converting it to grayscale and resizing it.
+        Preprocess the observation by resizing it.
         """
-        # Convert to grayscale using PIL
-        obs = np.array(Image.fromarray(obs).convert('L')).astype('float32')
+        obs = np.array(obs).astype('float32')
+
         # Resize the observation to target height and width using OpenCV
         obs = cv2.resize(obs, (self.h, self.w))
         # Normalize the observation to [0, 1] range
-        obs /= 255.0
+        # obs /= 255.0
         return obs
 

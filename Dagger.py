@@ -38,6 +38,13 @@ class MyAgent(DaggerAgent):
 		self.loss_fn = nn.CrossEntropyLoss()
 
 		self.update_num = 0
+	
+	def model_predict(self, obs):
+		"""
+		obs: (bs, history, h, w, c)
+		"""
+		obs = self.process(obs=obs) # (bs, history, c, h, w)
+		return self.model(obs)
 
 	def train(self, data_loader):
 		total_loss = 0
@@ -47,7 +54,7 @@ class MyAgent(DaggerAgent):
 		for data, label in tqdm(data_loader):
 			data = data.to(device)
 			label = label.to(device)
-			output = self.model(data)
+			output = self.model_predict(data)
 			loss = self.loss_fn(output, label)
 			self.optimizer.zero_grad()
 			loss.backward()
@@ -73,7 +80,7 @@ class MyAgent(DaggerAgent):
 			for data, label in tqdm(data_loader):
 				data = data.to(device)
 				label = label.to(device)
-				output = self.model(data)
+				output = self.model_predict(data)
 				loss = self.loss_fn(output, label)
 				total_loss += loss.item()
 				predicted = output.argmax(dim=1)  # Assuming multi-class classification
@@ -82,6 +89,15 @@ class MyAgent(DaggerAgent):
 
 		accuracy = correct / total
 		return total_loss / len(data_loader), accuracy
+	
+	def process(self, obs):
+		"""
+		obs: (bs, history, h, w, c)
+		"""
+		# transpose dim
+		obs = obs.permute(0, 1, 4, 2, 3) # (bs, history, c, h, w)
+		obs = obs.reshape(obs.size(0), obs.size(1) * obs.size(2), obs.size(3), obs.size(4))
+		return obs
 
 
 	def predict(self, data_batch):
@@ -94,8 +110,10 @@ class MyAgent(DaggerAgent):
         # 关闭梯度计算
 		with torch.no_grad():
             # 前向传播：通过模型预测动作
-			data_batch = data_batch.unsqueeze(0) if data_batch.dim() == 3 else data_batch
-			output = self.model(data_batch)
+			# drop history
+			data_batch = data_batch.unsqueeze(0) if data_batch.dim() == 4 else data_batch
+			# data_batch = data_batch[:, -1] # (bs, h, w, c )
+			output = self.model_predict(data_batch)
 			action = torch.argmax(output, dim=1).item()
         
 		return action	# train your model with labeled data

@@ -7,6 +7,89 @@ import torch.nn.functional as F
 
 from torch.nn import init
 
+
+import torch.nn as nn
+import torch.nn.init as init
+import numpy as np
+
+# class CnnPolicy(nn.Module):
+#     def __init__(self, input_size, output_size, use_noisy_net=False):
+#         super(CnnPolicy, self).__init__()
+
+#         # Select linear or NoisyLinear based on use_noisy_net
+#         linear = NoisyLinear if use_noisy_net else nn.Linear
+
+#         # Feature extraction: Adding Dropout and Pooling after the second and third CNN layers
+#         self.feature = nn.Sequential(
+#             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=8, stride=4),
+#             nn.ReLU(),
+            
+#             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
+#             nn.ReLU(),
+#             # nn.Dropout(0.2),  # Add Dropout after the second convolution layer
+#             # nn.MaxPool2d(kernel_size=2, stride=2),  # Add Pooling after the second convolution layer
+            
+#             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
+#             nn.ReLU(),
+#             # nn.Dropout(0.3),  # Add Dropout after the third convolution layer
+#             # nn.MaxPool2d(kernel_size=2, stride=2),  # Add Pooling after the third convolution layer
+
+#             nn.Flatten(),  # Flatten the output before fully connected layers
+            
+#             nn.Linear(7 * 7 *64, 256),  # Fully connected layer
+#             nn.ReLU(),
+#             nn.Linear(256, 128),  # Reduced size of fully connected layers
+#             nn.ReLU()
+#         )
+
+#         # Actor network: Simplified and reduced layer size
+#         self.actor = nn.Sequential(
+#             # nn.Linear(128, 128),  # Match with the simplified size
+#             # nn.ReLU(),
+#             nn.Linear(128, output_size)  # Final output layer
+#         )       
+        
+#         # Feature extraction: simplified version
+#         # self.feature = nn.Sequential(
+#         #     nn.Conv2d(in_channels=3, out_channels=32, kernel_size=8, stride=4),
+#         #     nn.ReLU(),
+#         #     nn.Conv2d(in_channels=32, out_channels=64, kernel_size=4, stride=2),
+#         #     nn.ReLU(),
+#         #     nn.Dropout(0.2),
+#         #     nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=1),
+#         #     nn.ReLU(),
+#         #     nn.Flatten(),
+#         #     linear(7 * 7 * 64, 256),  # Reduced size of fully connected layers
+#         #     nn.ReLU(),
+#         #     linear(256, 128),  # Reduced the output size from 448 to 128 for simplification
+#         #     nn.ReLU()
+#         # )
+
+#         # # Actor network: simplified and reduced layer size
+#         # self.actor = nn.Sequential(
+#         #     linear(128, 128),  # Match with the simplified size
+#         #     nn.ReLU(),
+#         #     linear(128, output_size)
+#         # )
+
+#         # Initialize weights
+#         self._initialize_weights()
+
+#     def _initialize_weights(self):
+#         """Apply orthogonal initialization to weights and zero initialization to biases."""
+#         for m in self.modules():
+#             if isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear):
+#                 init.orthogonal_(m.weight, np.sqrt(2))
+#                 if m.bias is not None:
+#                     m.bias.data.zero_()
+
+#     def forward(self, state):
+#         """Forward pass of the network."""
+#         x = self.feature(state)
+#         policy = self.actor(x)
+#         return policy
+
+
 class CnnPolicy(nn.Module):
     def __init__(self, input_size, output_size, use_noisy_net=False):
         super(CnnPolicy, self).__init__()
@@ -19,7 +102,7 @@ class CnnPolicy(nn.Module):
 
         self.feature = nn.Sequential(
             nn.Conv2d(
-                in_channels=4,
+                in_channels=12,
                 out_channels=32,
                 kernel_size=8,
                 stride=4),
@@ -30,6 +113,7 @@ class CnnPolicy(nn.Module):
                 kernel_size=4,
                 stride=2),
             nn.ReLU(),
+            nn.Dropout(0.2),
             nn.Conv2d(
                 in_channels=64,
                 out_channels=64,
@@ -134,7 +218,7 @@ class NoisyLinear(nn.Module):
 
 class Flatten(nn.Module):
     def forward(self, input):
-        return input.view(input.size(0), -1)
+        return input.reshape(input.size(0), -1)
 
 
 class CnnActorCriticNetwork(nn.Module):

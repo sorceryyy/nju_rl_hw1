@@ -9,7 +9,7 @@ import torch.optim as optim
 from torch.distributions.categorical import Categorical
 
 from model import CnnActorCriticNetwork, RNDModel
-from utils import global_grad_norm_
+from utils import global_grad_norm_, turn_grey
 
 
 class RNDAgent(object):
@@ -67,7 +67,8 @@ class RNDAgent(object):
         return action, value_ext.data.cpu().numpy().squeeze(), value_int.data.cpu().numpy().squeeze(), policy.detach()
 
     def predict(self, state):
-        action, _, _, _ = self.get_action(state)
+        state = turn_grey(state)
+        action, _, _, _ = self.get_action(state / 255.0)
         return action[0]
 
     @staticmethod
