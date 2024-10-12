@@ -451,6 +451,7 @@ class DaggerTrainer(Trainer):
         
         mean_reward = np.mean(rewards) if rewards else -1 # ensure not empty
         std_reward = np.std(rewards) if rewards else -1
+        logger.logkv("collect/policy_epsilon", epsilon)
         logger.logkv(f"collect/r_m", mean_reward)
         logger.logkv(f"collect/r_std", std_reward)
         time_step_holder.set_time(time_step)
