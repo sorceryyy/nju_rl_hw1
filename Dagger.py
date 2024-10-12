@@ -124,7 +124,7 @@ class MyAgent(DaggerAgent):
 			output = self.model_predict(data_batch)
 			
 			# argmax
-			action = torch.argmax(output, dim=1).item()
+			# action = torch.argmax(output, dim=1).item()
 
 			# Apply softmax to convert the output logits into probabilities
 			probabilities = F.softmax(output, dim=1)  # Shape: (bs, num_actions)
