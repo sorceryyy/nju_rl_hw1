@@ -94,7 +94,7 @@ def main():
 
 		if (epoch + 1) % args.rl_log_interval == 0:
 			agent.model.eval()
-			evaluate_episode(agent, env=env, eval_episode=10, time_step=epoch, save_fig=True)  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
+			evaluate_episode(agent, env=env, eval_episode=5, time_step=epoch, save_fig=True)  # 对当前 agent 的表现进行测试和日志记录	for epoch in tqdm(range(epochs), desc="Train Dagger"):
 		
 		
 		if (epoch + 1) % args.save_interval == 0:

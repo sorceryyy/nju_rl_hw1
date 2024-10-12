@@ -108,7 +108,7 @@ def plot(record):
         
 #         self.img_count += 1  # Increment image count for unique file names
 def turn_grey(bs_obs):
-    """bs_obs: (batch_size, height, width, channels)"""
+    """bs_obs: (**batch_size, height, width, channels)"""
     
     # 如果输入已经是 numpy 数组形式，可以使用批量操作
     # 只保留 R,G,B 维度，不包含批量维度

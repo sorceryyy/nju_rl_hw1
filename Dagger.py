@@ -6,6 +6,8 @@ from abc import abstractmethod
 from tqdm import tqdm
 
 from model import CnnPolicy
+from utils import turn_grey
+import torch.nn.functional as F
 
 from RLA import logger, time_step_holder, exp_manager
 
@@ -41,10 +43,11 @@ class MyAgent(DaggerAgent):
 	
 	def model_predict(self, obs):
 		"""
-		obs: (bs, history, h, w, c)
+		obs: (bs, history, h, w)
 		"""
 		obs = self.process(obs=obs) # (bs, history, c, h, w)
 		return self.model(obs)
+		
 
 	def train(self, data_loader):
 		total_loss = 0
@@ -94,10 +97,15 @@ class MyAgent(DaggerAgent):
 		"""
 		obs: (bs, history, h, w, c)
 		"""
+		# obs = turn_grey(obs) # (bs, history, h, w)
+		
+
+		## colorful
 		# transpose dim
-		obs = obs.permute(0, 1, 4, 2, 3) # (bs, history, c, h, w)
-		obs = obs.reshape(obs.size(0), obs.size(1) * obs.size(2), obs.size(3), obs.size(4))
-		return obs
+		# obs = obs.permute(0, 1, 4, 2, 3) # (bs, history, c, h, w)
+		# obs = obs.reshape(obs.size(0), obs.size(1) * obs.size(2), obs.size(3), obs.size(4))
+
+		return obs / 255.0
 
 
 	def predict(self, data_batch):
@@ -111,10 +119,18 @@ class MyAgent(DaggerAgent):
 		with torch.no_grad():
             # 前向传播：通过模型预测动作
 			# drop history
-			data_batch = data_batch.unsqueeze(0) if data_batch.dim() == 4 else data_batch
+			data_batch = data_batch.unsqueeze(0) if data_batch.dim() == 3 else data_batch
 			# data_batch = data_batch[:, -1] # (bs, h, w, c )
 			output = self.model_predict(data_batch)
+			
+			# argmax
 			action = torch.argmax(output, dim=1).item()
+
+			# Apply softmax to convert the output logits into probabilities
+			probabilities = F.softmax(output, dim=1)  # Shape: (bs, num_actions)
+			action = torch.multinomial(probabilities, num_samples=1)  # Shape: (bs, 1)
+			# Squeeze the last dimension to get a 1D tensor of actions
+			action = action.squeeze(dim=-1)  # Shape: (bs,)
         
 		return action	# train your model with labeled data
 	

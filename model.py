@@ -102,7 +102,7 @@ class CnnPolicy(nn.Module):
 
         self.feature = nn.Sequential(
             nn.Conv2d(
-                in_channels=12,
+                in_channels=4,
                 out_channels=32,
                 kernel_size=8,
                 stride=4),

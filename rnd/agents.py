@@ -67,7 +67,7 @@ class RNDAgent(object):
         return action, value_ext.data.cpu().numpy().squeeze(), value_int.data.cpu().numpy().squeeze(), policy.detach()
 
     def predict(self, state):
-        state = turn_grey(state)
+        # state = turn_grey(state)
         action, _, _, _ = self.get_action(state / 255.0)
         return action[0]
 

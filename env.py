@@ -115,8 +115,9 @@ class Env(gym.Wrapper):
         """
         Preprocess the observation by resizing it.
         """
-        obs = np.array(obs).astype('float32')
+        # obs = np.array(obs).astype('float32')
 
+        obs = cv2.cvtColor(obs, cv2.COLOR_RGB2GRAY)
         # Resize the observation to target height and width using OpenCV
         obs = cv2.resize(obs, (self.h, self.w))
         # Normalize the observation to [0, 1] range
