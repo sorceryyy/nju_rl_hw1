@@ -353,7 +353,7 @@ class DaggerTrainer(Trainer):
         self.agent = agent  # The agent to interact with the environment
         self.expert_agent = expert_agent
         self.epsilon = args.epsilon  # Exploration rate (epsilon)
-        self.reset_collection = args.reset_collection  # Whether to reset the environment for every collection
+        self.max_explore_epsilon = args.max_explore_epsilon
         self.max_buffer_size = args.max_buffer_size
 
         # Arrays to store observations, actions, rewards, ends, etc.
@@ -393,15 +393,18 @@ class DaggerTrainer(Trainer):
         self.rewards = self.rewards[drop_num:]
         self.ends = self.ends[drop_num:]
 
-    def collect(self, num_steps=None, target_buffer_step=None):
+    def collect(self, num_steps=None, target_buffer_step=None, time_step=0):
         """
         Collect data by interacting with the environment, and store in `self.obses` and `self.actions`.
         """
+        rewards = []  # List to store total reward for each episode
+        episode_reward = 0.0
         if num_steps is None:
             num_steps = max(target_buffer_step - self.length, 0)
 
         obs, info = self.env.reset()
-        epsilon = self.epsilon
+        assert time_step - 1 >= 0
+        epsilon = min(self.epsilon**(time_step-1), self.max_explore_epsilon)
 
         # Ensure buffer size does not exceed max buffer size
         if num_steps + self.length > self.max_buffer_size:
@@ -418,6 +421,7 @@ class DaggerTrainer(Trainer):
                 final_action = action  # Choose a random action
 
             obs_next, reward, done, truncated, _ = self.env.step(final_action)  # Step in the environment
+            episode_reward += reward  # Accumulate reward for this episode
 
             # Initialize lists if empty
             if self.length == 0:
@@ -441,6 +445,16 @@ class DaggerTrainer(Trainer):
             # Reset environment if the episode is done
             if done or truncated:
                 obs, _ = self.env.reset()
+                rewards.append(episode_reward)
+                episode_reward = 0.0
+        
+        mean_reward = np.mean(rewards) if rewards else -1 # ensure not empty
+        std_reward = np.std(rewards) if rewards else -1
+        logger.logkv(f"collect/r_m", mean_reward)
+        logger.logkv(f"collect/r_std", std_reward)
+        time_step_holder.set_time(time_step)
+        logger.dumpkvs()
+
 
     # def collect_array(self, num_steps=None, target_buffer_step=None):
     #     """

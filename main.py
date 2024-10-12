@@ -81,12 +81,13 @@ def main():
 
 	epochs = args.epochs
 	exp_manager.new_saver(max_to_keep=1000)
-	dagger_trainer.load()
+	if not args.reset_collection:
+		dagger_trainer.load()
 	collect_times = 0
 	for epoch in tqdm(range(epochs), desc="Train Dagger"):
 		if epoch % args.collect_interval == 0:
 			collect_times += 1
-			dagger_trainer.collect(target_buffer_step=args.epoch_data_num*collect_times)
+			dagger_trainer.collect(target_buffer_step=args.epoch_data_num*collect_times, time_step=collect_times)
 			dagger_trainer.info()
 			dagger_trainer.save()
 		dagger_trainer.train(epoch=epoch, train_ratio=args.train_ratio)

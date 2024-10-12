@@ -17,12 +17,12 @@ def get_args():
     parser.add_argument('--save-img', type=bool, default=True)
     parser.add_argument('--save-interval', type=int, default=10, help='Save interval, one eval per n updates (default: None)')
     parser.add_argument('--play-game', type=bool, default=False)
-    parser.add_argument('--epsilon', type=float, default=0.3, help="Prob of taking expert action")
     parser.add_argument('--lr', type=float, default=1e-3)
     parser.add_argument('--train-bs', type=int, default=128)
     parser.add_argument('--eval-bs', type=int, default=256)
     parser.add_argument('--epochs', type=int, default=500)
-    parser.add_argument('--reset-collection', type=bool, default=False)
+    parser.add_argument('--reset-collection', type=bool, default=True)
+
 
     parser.add_argument('--data-collector', type=str, default='rnd')
     parser.add_argument('--data-dir', type=str, default="./data")
@@ -31,6 +31,8 @@ def get_args():
 
     # collect data
     parser.add_argument('--collect-interval', type=int, default=100)
+    parser.add_argument('--epsilon', type=float, default=0.5, help="Prob of taking expert action")
+    parser.add_argument('--max-explore-epsilon', type=float, default=0.3, help="Max explore epsilon")
 
     # trainer
     parser.add_argument('--max_buffer_size', type=int, default=20000)
